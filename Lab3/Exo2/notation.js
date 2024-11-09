@@ -1,4 +1,4 @@
- function mean(scores) {
+function mean(scores) {
   let average = 0;
   scores.forEach((element) => {
     average += element;
@@ -7,4 +7,4 @@
   return average;
 }
 
-module.exports = mean()
+module.exports = { mean };

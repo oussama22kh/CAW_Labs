@@ -5,3 +5,14 @@ body{
     align-items: center;
     height: 100vh;
 }
+
+#Exo1{
+    margin: 20px;
+}
+#Exo2{
+    margin: 20px;
+}
+
+li{
+    cursor: pointer;
+}

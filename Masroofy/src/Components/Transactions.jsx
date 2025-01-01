@@ -135,7 +135,7 @@ export default function Transactions() {
                   <td className="px-4 py-4 border-b text-start">
                     <button
                       onClick={() => handleEdit(transaction)} // Trigger edit
-                      className="text-blue-500 hover:text-blue-700"
+                      className="bg-blue-500 hover:bg-blue-700 text-white px-2 py-1 rounded-md"
                     >
                       Edit
                     </button>

@@ -1,116 +1,196 @@
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import {
+  getTransactions,
+  deleteTransaction,
+  updateTransaction,
+} from "../../pocketbaseService"; // Assuming you have functions to get, update, and delete transactions
+import TransactionForm from "./TransactionForm";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Button,
+} from "@mui/material"; // Import Dialog components
 
-export default function Transactions({ transactions, onEdit, onDelete }) {
-  const [filteredTransactions, setFilteredTransactions] =
-    useState(transactions);
+export default function Transactions() {
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false); // Manage dialog open state
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // For delete confirmation dialog
+  const [transactionToDelete, setTransactionToDelete] = useState(null); // To store transaction to be deleted
 
-  // Filter transactions whenever the filter or transactions change
+  // Fetch transactions when the component mounts
   useEffect(() => {
-    let filtered = transactions;
+    const fetchTransactions = async () => {
+      setLoading(true);
+      try {
+        const response = await getTransactions();
+        setTransactions(response);
+      } catch (error) {
+        toast.error("Failed to load transactions. Please try again.");
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTransactions();
+  }, []);
 
-    if (filter.category) {
-      filtered = filtered.filter(
-        (transaction) => transaction.category === filter.category
-      );
+  // Handle transaction deletion
+  const handleDelete = async () => {
+    if (transactionToDelete) {
+      try {
+        await deleteTransaction(transactionToDelete.id);
+        setTransactions((prev) =>
+          prev.filter(
+            (transaction) => transaction.id !== transactionToDelete.id
+          )
+        );
+        toast.success("Transaction deleted successfully.");
+      } catch (error) {
+        toast.error("Failed to delete transaction. Please try again.");
+        console.error(error);
+      } finally {
+        setOpenDeleteDialog(false); // Close delete dialog
+        setTransactionToDelete(null); // Clear the transaction to delete
+      }
     }
+  };
 
-    if (filter.date) {
-      filtered = filtered.filter(
-        (transaction) => transaction.date === filter.date
-      );
+  // Handle Edit (Set the selected transaction to update)
+  const handleEdit = (transaction) => {
+    setSelectedTransaction(transaction);
+    setOpenDialog(true); // Open the dialog
+  };
+
+  const handleUpdateTransaction = async (formData) => {
+    if (!selectedTransaction) return;
+
+    try {
+      await updateTransaction(selectedTransaction.id, formData); // Update the transaction
+      toast.success("Transaction updated successfully.");
+      setOpenDialog(false);
+      setSelectedTransaction(null); // Clear the selected transaction after update
+      const updatedTransactions = await getTransactions(); // Fetch the updated list
+      setTransactions(updatedTransactions);
+    } catch (error) {
+      toast.error("Failed to update transaction.");
+      console.error(error);
     }
+  };
 
-    setFilteredTransactions(filtered);
-  }, [filter, transactions]);
-
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    setFilter({ ...filter, [name]: value });
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString(); // Show only date part
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col w-full">
       <h1 className=" text-[36px] text-[#0B666A] font-semibold">
         Transactions
       </h1>
-      {/* Filters */}
-      <div className="flex flex-wrap gap-4 mt-4">
-        <select
-          name="category"
-          value={filter.category}
-          onChange={handleFilterChange}
-          className="px-4 py-2 border rounded-md focus:outline-none"
-        >
-          <option value="">All Categories</option>
-          {/* Dynamically populate categories */}
-          {Array.from(new Set(transactions.map((t) => t.category))).map(
-            (category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            )
-          )}
-        </select>
-
-        <input
-          type="date"
-          name="date"
-          value={filter.date}
-          onChange={handleFilterChange}
-          className="px-4 py-2 border rounded-md focus:outline-none"
-        />
-      </div>
-
-      {/* Transaction List */}
-      <div className="mt-6">
-        {filteredTransactions.length > 0 ? (
-          <table className="w-full border-collapse border border-gray-200">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="border border-gray-200 px-4 py-2">Name</th>
-                <th className="border border-gray-200 px-4 py-2">Amount</th>
-                <th className="border border-gray-200 px-4 py-2">Date</th>
-                <th className="border border-gray-200 px-4 py-2">Category</th>
-                <th className="border border-gray-200 px-4 py-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredTransactions.map((transaction) => (
-                <tr key={transaction.id} className="hover:bg-gray-50">
-                  <td className="border border-gray-200 px-4 py-2">
+      {loading ? (
+        <p className="text-center">Loading transactions...</p>
+      ) : (
+        <table className="mt-[100px] min-w-full border-collapse">
+          <thead>
+            <tr>
+              <th className="px-4 py-4 border-b-2 text-start ">Name</th>
+              <th className="px-4 py-4 border-b-2 text-start">Type</th>
+              <th className="px-4 py-4 border-b-2 text-start">Amount</th>
+              <th className="px-4 py-4 border-b-2 text-start">Category</th>
+              <th className="px-4 py-4 border-b-2 text-start">Date</th>
+              <th className="px-4 py-4 border-b-2 text-start">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {transactions.length > 0 ? (
+              transactions.map((transaction) => (
+                <tr key={transaction.id}>
+                  <td className="px-4 py-4 border-b text-start">
                     {transaction.name}
                   </td>
-                  <td className="border border-gray-200 px-4 py-2">
+                  <td className="px-4 py-4 border-b text-start">
+                    <span
+                      className={`px-4 py-1 rounded-lg ${
+                        transaction.type === "income"
+                          ? "bg-[#97FEED] text-[#071952]"
+                          : "bg-[#F95454] text-white"
+                      }`}
+                    >
+                      {transaction.type}
+                    </span>
+                  </td>
+                  <td className="px-4 py-4 border-b text-start">
                     {transaction.amount} DZD
                   </td>
-                  <td className="border border-gray-200 px-4 py-2">
-                    {transaction.date}
-                  </td>
-                  <td className="border border-gray-200 px-4 py-2">
+                  <td className="px-4 py-4 border-b text-start">
                     {transaction.category}
                   </td>
-                  <td className="border border-gray-200 px-4 py-2 space-x-2">
+                  <td className="px-4 py-4 border-b  text-start">
+                    {formatDate(transaction.date)}
+                  </td>
+                  <td className="px-4 py-4 border-b text-start">
                     <button
-                      onClick={() => onEdit(transaction)}
-                      className="text-blue-500 hover:underline"
+                      onClick={() => handleEdit(transaction)} // Trigger edit
+                      className="text-blue-500 hover:text-blue-700"
                     >
                       Edit
                     </button>
                     <button
-                      onClick={() => onDelete(transaction.id)}
-                      className="text-red-500 hover:underline"
+                      onClick={() => {
+                        setTransactionToDelete(transaction); // Set the transaction to delete
+                        setOpenDeleteDialog(true); // Open the delete confirmation dialog
+                      }}
+                      className="bg-[#F95454] text-white hover:bg-red-700 ml-4 px-2 py-1 rounded-md"
                     >
                       Delete
                     </button>
                   </td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p className="text-gray-500 mt-4">No transactions found.</p>
-        )}
-      </div>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6" className="text-center py-4">
+                  No transactions found
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      )}
+
+      {/* Dialog for editing a transaction */}
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+        <DialogTitle>Edit Transaction</DialogTitle>
+        <DialogContent>
+          <TransactionForm
+            initialData={selectedTransaction}
+            onSubmit={handleUpdateTransaction}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+      >
+        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogContent>
+          <p>Are you sure you want to delete this transaction?</p>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDeleteDialog(false)} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleDelete} color="primary">
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

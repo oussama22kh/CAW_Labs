@@ -29,7 +29,9 @@ export default function TransactionForm({
         name: initialData.name,
         type: initialData.type,
         amount: initialData.amount,
-        date: initialData.date,
+        date: initialData.date
+          ? new Date(initialData.date).toISOString().split("T")[0]
+          : "", // Format date to yyyy-MM-dd,
         category: initialData.category,
         notes: initialData.notes,
       });

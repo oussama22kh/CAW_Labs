@@ -1,6 +1,6 @@
 import PocketBase from "pocketbase";
 
-const pb = new PocketBase("https://masroofy.pockethost.io");
+export const pb = new PocketBase("https://masroofy.pockethost.io");
 
 export const addTransaction = async (transactionData) => {
   try {
@@ -17,7 +17,7 @@ export const addTransaction = async (transactionData) => {
 export const getTransactions = async () => {
   try {
     const transactions = await pb.collection("transactions").getFullList({
-      expand: "relField1,relField2.subRelField", // Add fields to expand if needed
+      filter: `user==${pb.authStore.record.id}` // Add fields to expand if needed
     });
     return transactions;
   } catch (error) {

@@ -16,7 +16,7 @@ import {
 
 export default function Transactions() {
   const [transactions, setTransactions] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [openDialog, setOpenDialog] = useState(false); // Manage dialog open state
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // For delete confirmation dialog
@@ -30,7 +30,10 @@ export default function Transactions() {
         const response = await getTransactions();
         setTransactions(response);
       } catch (error) {
-        toast.error("Failed to load transactions. Please try again.");
+        console.log(loading);
+        if (!loading) {
+          toast.error("Failed to load transactions. Please try again.");
+        }
         console.error(error);
       } finally {
         setLoading(false);

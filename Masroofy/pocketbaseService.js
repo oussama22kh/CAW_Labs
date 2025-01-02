@@ -2,11 +2,18 @@ import PocketBase from "pocketbase";
 
 export const pb = new PocketBase("https://masroofy.pockethost.io");
 
+// Adds a new transaction associated with the currently authenticated user
 export const addTransaction = async (transactionData) => {
   try {
-    const response = await pb
-      .collection("transactions")
-      .create(transactionData);
+    // Ensure the user is authenticated
+    const userId = pb.authStore?.model?.id;
+    if (!userId) {
+      throw new Error("User not authenticated.");
+    }
+
+    // Attach the user ID to the transaction
+    const data = { ...transactionData, user: userId };
+    const response = await pb.collection("transactions").create(data);
     return response; // Returns the created transaction object
   } catch (error) {
     console.error("Error adding transaction:", error);
@@ -14,10 +21,18 @@ export const addTransaction = async (transactionData) => {
   }
 };
 
+// Fetches all transactions for the authenticated user
 export const getTransactions = async () => {
   try {
+    // Ensure the user is authenticated
+    const userId = pb.authStore?.model?.id;
+    if (!userId) {
+      throw new Error("User not authenticated.");
+    }
+
     const transactions = await pb.collection("transactions").getFullList({
-      filter: `user==${pb.authStore.record.id}` // Add fields to expand if needed
+      filter: `user='${userId}'`, // Ensure user-specific transactions
+      sort: "-created", // Example: sort transactions by creation date (newest first)
     });
     return transactions;
   } catch (error) {
@@ -26,24 +41,29 @@ export const getTransactions = async () => {
   }
 };
 
+// Updates an existing transaction by ID
 export const updateTransaction = async (id, data) => {
   try {
-    return await pb.collection("transactions").update(id, data);
+    const response = await pb.collection("transactions").update(id, data);
+    return response;
   } catch (error) {
     console.error("Error updating transaction:", error);
     throw error;
   }
 };
 
+// Deletes a transaction by ID
 export const deleteTransaction = async (id) => {
   try {
-    return await pb.collection("transactions").delete(id);
+    const response = await pb.collection("transactions").delete(id);
+    return response;
   } catch (error) {
     console.error("Error deleting transaction:", error);
     throw error;
   }
 };
 
+// Fetches a single transaction by ID with optional expanded fields
 export const fetchTransactionById = async (id) => {
   try {
     const response = await pb.collection("transactions").getOne(id, {

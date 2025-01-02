@@ -13,7 +13,14 @@ export default function TransactionForm({
     notes: "",
   });
 
-  const categories = ["Food", "Transport", "Utilities", "Other"]; // Example categories
+  const categories = [
+    "Food",
+    "Transport",
+    "Utilities",
+    "Health",
+    "Entertainment",
+    "Other",
+  ]; // Example categories
 
   // If we are in update mode, set the initial state with the data passed from the parent
   useEffect(() => {
@@ -114,6 +121,7 @@ export default function TransactionForm({
             }`}
           placeholder="Enter transaction name"
           required
+          autoFocus
         />
       </div>
 

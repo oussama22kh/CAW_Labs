@@ -7,6 +7,7 @@ import {
   Route,
   Link,
   Navigate,
+  useNavigate
 } from "react-router-dom";
 import Home from "./Components/Home";
 import home from "/home.png";
@@ -20,14 +21,22 @@ import Transactions from "./Components/Transactions";
 import { pb } from "../pocketbaseService";
 const App = () => {
   const [isAuthenticated, setisAuthenticated] = useState(pb.authStore.isValid);
-
+  const navigate = useNavigate()
   useEffect(() => {
     const checkAuth = () => {
-       // Log current auth state
+      // Log current auth state
       setisAuthenticated(pb.authStore.isValid);
+      console.log(isAuthenticated);
+      
     };
     checkAuth();
   }, []);
+
+  const logout = (e) => {
+    e.preventDefault();
+    pb.authStore.clear();
+    navigate("/auth")
+  };
   return (
     <>
       <div className="flex min-h-screen font-sans">
@@ -68,7 +77,9 @@ const App = () => {
                 to="/"
                 className="hover:bg-[#35A29F] py-4  rounded-lg  px-[20px] flex "
               >
-                <h1 className="text-[18px]">Log out</h1>
+                <h1 className="text-[18px]" onClick={(e)=>logout(e)}>
+                  Log out
+                </h1>
               </Link>
             </nav>
           </aside>

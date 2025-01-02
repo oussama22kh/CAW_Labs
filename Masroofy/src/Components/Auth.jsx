@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { pb } from "../../pocketbaseService";
-import { Link } from "react-router-dom";
+import { Link ,useNavigate} from "react-router-dom";
 export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [name, setName] = useState("");
   const [isSignup, setIsSignup] = useState(false);
-
+  const navigate = useNavigate();
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
@@ -15,6 +15,8 @@ export default function Auth() {
         .collection("users")
         .authWithPassword(email, password);
       console.log("Login successful:", data);
+      navigate("/")
+
     } catch (error) {
       console.error("Login error:", error);
     }
@@ -36,6 +38,7 @@ export default function Auth() {
       console.log("Signup successful:", newUser);
       // Automatically log in the user after signup
       await pb.collection("users").authWithPassword(email, password);
+      navigate("/")
     } catch (error) {
       console.error("Signup error:", error);
     }
@@ -44,8 +47,8 @@ export default function Auth() {
   return (
     <>
       <div className="flex flex-col h-screen items-center justify-center p-4 bg-gray-50">
-        <h2 className="text-3xl font-semibold mb-8">
-          {isSignup ? "Sign Up" : "Login"}
+        <h2 className="text-3xl font-semibold mb-8 italic">
+          {isSignup ? "Create a Ma$roofy Account" : "Login to Ma$roofy"}
         </h2>
         <form
           onSubmit={isSignup ? handleSignup : handleLogin}
@@ -91,14 +94,14 @@ export default function Auth() {
               />
             )}
           </div>
-          <Link to="/">
+          
             <button
               type="submit"
               className="w-full py-3 bg-[#35A29F] text-white font-semibold rounded-md hover:bg-[#2e8b88] focus:outline-none focus:ring-2 focus:ring-[#2e8b88]"
             >
               {isSignup ? "Sign Up" : "Login"}
             </button>
-          </Link>
+          
         </form>
         <p className="mt-4 text-gray-600">
           {isSignup ? (

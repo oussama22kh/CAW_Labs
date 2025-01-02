@@ -1,6 +1,7 @@
 // src/App.jsx
+import { useState,useEffect } from "react";
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link,Navigate } from "react-router-dom";
 import Home from "./Components/Home";
 import home from "/home.png";
 import add from "/addition.png";
@@ -10,12 +11,23 @@ import AddTransaction from "./Components/AddTransaction";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Transactions from "./Components/Transactions";
-
+import PocketBase from "pocketbase";
 const App = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const pb = new PocketBase("https://masroofy.pockethost.io/");
+
+  // Check for authentication token
+  useEffect(() => {
+    const token = pb.authStore.token
+    if (token) {
+      setIsAuthenticated(true);
+    }
+  }, []);
   return (
-    <Router>
+    <>
       <div className="flex min-h-screen font-sans">
         {/* Sidebar */}
+        {isAuthenticated && (
         <aside className="w-[300px]  bg-[#0B666A] text-white  min-h-screen flex flex-col items-center px-[10px]  py-[50px] shadow-xl">
           <h1 className="text-3xl font-bold mb-[100px]">MA$ROOFY</h1>
           <nav className="flex flex-col gap-[50px] w-full items-center ">
@@ -49,18 +61,29 @@ const App = () => {
             </Link>
           </nav>
         </aside>
+      )}
 
-        {/* Page Content */}
-        <main className=" flex-1 py-[40px] px-[60px]">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/add-transaction" element={<AddTransaction />} />
-            <Route path="/transactions" element={<Transactions />} />
-          </Routes>
-        </main>
+      {/* Page Content */}
+      <main className=" flex-1 py-[40px] px-[60px]">
+        <Routes>
+          <Route
+            path="/"
+            element={isAuthenticated ? <Home /> : <Navigate to="/auth" />}
+          />
+          <Route
+            path="/add-transaction"
+            element={isAuthenticated ? <AddTransaction /> : <Navigate to="/auth" />}
+          />
+          <Route
+            path="/transactions"
+            element={isAuthenticated ? <Transactions /> : <Navigate to="/auth" />}
+          />
+        </Routes>
+      </main>
+
       </div>
       <ToastContainer />
-    </Router>
+    </>
   );
 };
 

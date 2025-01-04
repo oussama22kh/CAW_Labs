@@ -235,6 +235,14 @@ export default function Transactions() {
             color="primary"
             className="mt-4"
             shape="rounded"
+            sx={{
+              "& .MuiPaginationItem-root": {
+                "@apply text-red-500 hover:bg-red-100": {}, // Tailwind styles
+                "&.Mui-selected": {
+                  "@apply bg-blue-500 text-white": {}, // Tailwind styles
+                },
+              },
+            }}
           />
         </div>
       )}

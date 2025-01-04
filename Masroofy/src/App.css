@@ -4,3 +4,8 @@
 .transition-all {
   transition: all 0.3s ease-in-out;
 }
+
+.chart-container canvas {
+  width: 100% !important; /* Force canvas to match container width */
+  height: auto !important; /* Adjust height proportionally */
+}

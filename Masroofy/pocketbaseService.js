@@ -1,6 +1,7 @@
 import PocketBase from "pocketbase";
 
 export const pb = new PocketBase("https://masroofy.pockethost.io");
+pb.autoCancellation(false);
 
 // Adds a new transaction associated with the currently authenticated user
 export const addTransaction = async (transactionData) => {
@@ -34,6 +35,7 @@ export const getTransactions = async () => {
       filter: `user='${userId}'`, // Ensure user-specific transactions
       sort: "-created", // Example: sort transactions by creation date (newest first)
     });
+    console.log(transactions);
     return transactions;
   } catch (error) {
     console.error("Error fetching transactions:", error);

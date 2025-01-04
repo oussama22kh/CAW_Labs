@@ -15,12 +15,16 @@ import add from "/addition.png";
 import transaction from "/transaction.png";
 import analytics from "/analytics.png";
 import user from "/user.png";
+import download from "/download.png";
+
 import AddTransaction from "./Components/AddTransaction";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Transactions from "./Components/Transactions";
 import { pb } from "../pocketbaseService";
 import { useLocation } from "react-router-dom";
+import Reports from "./Components/Reports";
+import ExportData from "./Components/ExportData";
 const App = () => {
   const [isAuthenticated, setisAuthenticated] = useState(pb.authStore.isValid);
   const [showLogout, setShowLogout] = useState(false);
@@ -81,6 +85,10 @@ const App = () => {
                   <img src={analytics} className="w-[25px] h-[25px]" alt="" />
                   <h1 className="text-[18px]">Reports</h1>
                 </Link>
+                <Link to="/export" className={getLinkClasses("/export")}>
+                  <img src={download} className="w-[25px] h-[25px]" alt="" />
+                  <h1 className="text-[18px]">Export Data</h1>
+                </Link>
               </nav>
               {/* User Profile Dropdown */}
               <div className="relative w-full">
@@ -120,6 +128,16 @@ const App = () => {
               path="/transactions"
               element={
                 isAuthenticated ? <Transactions /> : <Navigate to="/auth" />
+              }
+            />
+            <Route
+              path="/reports"
+              element={isAuthenticated ? <Reports /> : <Navigate to="/auth" />}
+            />
+            <Route
+              path="/export"
+              element={
+                isAuthenticated ? <ExportData /> : <Navigate to="/auth" />
               }
             />
           </Routes>

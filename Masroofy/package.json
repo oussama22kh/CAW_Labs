@@ -15,6 +15,7 @@
     "@mui/material": "^6.3.0",
     "chart.js": "^4.4.7",
     "jspdf": "^2.5.2",
+    "jspdf-autotable": "^3.8.4",
     "papaparse": "^5.4.1",
     "pocketbase": "^0.24.0",
     "react": "^18.3.1",

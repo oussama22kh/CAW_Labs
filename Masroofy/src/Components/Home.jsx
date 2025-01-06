@@ -2,7 +2,7 @@ import inc from "/increase.png";
 import bln from "/balance.png";
 import { useState, useEffect } from "react";
 import { getTransactions } from "../../pocketbaseService";
-
+import Reports from "./Reports"
 export default function Home() {
   const [transactions, setTransactions] = useState([]);
   const [totals, setTotals] = useState({
@@ -81,6 +81,7 @@ export default function Home() {
           </h1>
         </div>
       </div>
+      <Reports></Reports>
     </div>
   );
 }

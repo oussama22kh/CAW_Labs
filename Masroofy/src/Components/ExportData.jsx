@@ -128,7 +128,7 @@ const ExportData = () => {
 
   return (
     <div className="flex flex-col w-full h-full ">
-      <h1 className="text-[36px] text-[#0B666A] font-semibold mb-[100px]">
+      <h1 className="text-[36px] text-[#0B666A] font-semibold my-[100px]">
         Export Data
       </h1>
       <p className="mb-6">Choose a format to export your transactions data:</p>

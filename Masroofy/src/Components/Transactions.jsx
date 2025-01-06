@@ -17,6 +17,7 @@ import {
   TextField,
   Pagination,
 } from "@mui/material";
+import ExportData from "./ExportData";
 
 export default function Transactions() {
   const [transactions, setTransactions] = useState([]);
@@ -244,7 +245,9 @@ export default function Transactions() {
               },
             }}
           />
+          <ExportData></ExportData>
         </div>
+        
       )}
 
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>

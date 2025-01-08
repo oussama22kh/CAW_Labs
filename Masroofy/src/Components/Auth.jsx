@@ -53,14 +53,13 @@ export default function Auth() {
     e.preventDefault();
     try {
       await pb.collection("users").requestPasswordReset(email);
-      alert("Password reset email sent. Please check your inbox.");
+      toast.success("If the email exists, a reset link has been sent to it.");
       setIsForgotPassword(false); // Return to login view
     } catch (error) {
       console.error("Password reset error:", error);
-      toast.error("Password reset error:", error);
+      toast.error("If the email exists, a reset link has been sent to it."); // Same message for errors
     }
   };
-
   return (
     <>
       <div className="flex flex-col h-screen items-center justify-center p-4 bg-gray-50">

@@ -245,9 +245,7 @@ export default function Transactions() {
               },
             }}
           />
-          <ExportData></ExportData>
         </div>
-        
       )}
 
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>

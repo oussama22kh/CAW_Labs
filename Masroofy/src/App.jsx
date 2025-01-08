@@ -59,7 +59,7 @@ const App = () => {
       <div className="flex min-h-screen font-sans">
         {/* Sidebar */}
         {isAuthenticated && (
-          <aside className="w-[300px]  bg-[#0B666A] text-white  min-h-screen flex flex-col items-center  px-[10px]  py-[50px] shadow-xl">
+          <aside className="fixed top-0 left-0 w-[300px] bg-[#0B666A] text-white h-full flex flex-col items-center px-[10px] py-[50px] shadow-xl">
             <h1 className="text-[36px] font-bold mb-[100px]">MA$ROOFY</h1>
             <div className="h-full flex flex-col justify-between">
               <nav className="flex flex-col gap-[50px] w-full items-center ">
@@ -112,7 +112,7 @@ const App = () => {
         )}
 
         {/* Page Content */}
-        <main className=" flex-1 py-[50px] px-[60px]">
+        <main className="ml-[300px] flex-1 py-[50px] px-[60px]">
           <Routes>
             <Route
               path="/"
